@@ -46,7 +46,10 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
     rotation();
     ctx.clearRect(0, 0, 600, 600)
     ctx.beginPath();
-    ctx.moveTo(ship.x + (10 * Math.cos[ship.rot]), ship.y + (10 * Math.sin[ship.rot]));
-    ctx.lineTo(ship.x, ship.y);
-    ctx.stroke();
+    ctx.moveTo(ship.x + (15 * Math.cos(ship.rot)), ship.y + (15 * Math.sin(ship.rot)));
+    ctx.lineTo(ship.x + (15 * Math.cos(ship.rot + (3 * Math.PI / 4))), ship.y + (15 * Math.sin(ship.rot + (3 * Math.PI / 4))));
+    ctx.lineTo(ship.x + (5 * Math.cos(ship.rot + Math.PI)), ship.y + (5 * Math.sin(ship.rot + Math.PI)));
+    ctx.lineTo(ship.x + (15 * Math.cos(ship.rot + (5 * Math.PI / 4))), ship.y + (15 * Math.sin(ship.rot + (5 * Math.PI / 4))))
+    ctx.lineTo(ship.x + (15 * Math.cos(ship.rot)), ship.y + (15 * Math.sin(ship.rot)))
+    ctx.fill();
 })
