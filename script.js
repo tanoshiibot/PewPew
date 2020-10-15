@@ -13,7 +13,10 @@ const ship = {
     "shoot2x": -30,
     "shoot2y": -30,
     "shoot3x": -30,
-    "shoot3y": -30
+    "shoot3y": -30,
+    "j": 0,
+    "k": 0,
+    "l": 0
 };
 
 class Asteroid {
@@ -64,15 +67,50 @@ function trajectory(element){
     element.y = (element.y + element.vely + 600) % 600;
 }
 
-function shoot(object, shootx, shooty, tra, interval){
-    object[shootx] = object[shootx] + (3 * Math.cos(tra));
-    object[shooty] = object[shooty] + (3 * Math.sin(tra)); 
-    if (object[shootx] < 0 || object[shooty] < 0 || object[shootx] > 600 || object[shooty] > 600){
+let explosion = false;
+
+function shoot(object, inc, shootx, shooty, tra, interval){
+    object[inc]++;
+    if (object[inc] < 100) {
+        object[shootx] = (object[shootx] + (5 * Math.cos(tra)) + 600) % 600;
+        object[shooty] = (object[shooty] + (5 * Math.sin(tra)) + 600) % 600; 
+        document.getElementById("test").innerHTML = object[inc];
+    } else if ((object[inc] >= 100) && (object[inc] <= 120)) {
+        object[shootx] = object[shootx];
+        object[shooty] = object[shooty];
+        explosion = true;
+        document.getElementById("test").innerHTML = object[inc];
+
+    } else if (object[inc] > 120) {
+        explosion = false;
+        object[inc] = 0;
         object[shootx] = -30;
         object[shooty] = -30;
         clearInterval(interval);
     }
 }
+
+function explosionAnimation(c, x, y, i) {
+    c.moveTo(x, y);
+    if (explosion == false) {
+        c.arc(x, y, 5 + i / 100 , 0, 2 * Math.PI,);
+    } else {
+        c.moveTo(x, y)
+        c.lineTo(x + (5 + i / 100) * Math.cos(Math.PI / 4), y + (5 + i / 100) * Math.sin(Math.PI / 4));
+        c.moveTo(x, y);
+        c.lineTo(x + (5 + i / 100) * Math.cos(Math.PI / 2), y + (5 + i / 100) * Math.sin(Math.PI / 2));
+        c.moveTo(x, y);
+        c.lineTo(x + (5 + i / 100) * Math.cos(3 * Math.PI / 4), y + (5 + i / 100) * Math.sin(3 * Math.PI / 4));
+        c.moveTo(x, y);
+        c.lineTo(x + (5 + i / 100) * Math.cos(5 * Math.PI / 4), y + (5 + i / 100) * Math.sin(5 * Math.PI / 4));
+        c.moveTo(x, y);
+        c.lineTo(x + (5 + i / 100) * Math.cos(3 * Math.PI / 2), y + (5 + i / 100) * Math.sin(3 * Math.PI / 2));
+        c.moveTo(x, y);
+        c.lineTo(x + (5 + i / 100) * Math.cos(5 * Math.PI / 4), y + (5 + i / 100) * Math.sin(5 * Math.PI / 4));
+    
+    }
+}
+
 function drawCanvas() {
     document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot, ~~ship.shootx, ~~ship.shooty];
     ctx.clearRect(0, 0, 600, 600)
@@ -82,15 +120,13 @@ function drawCanvas() {
     ctx.moveTo((ship.x + (15 * Math.cos(ship.rot))), ship.y + (15 * Math.sin(ship.rot)));
     ctx.lineTo(ship.x + (15 * Math.cos(ship.rot + (3 * Math.PI / 4))), ship.y + (15 * Math.sin(ship.rot + (3 * Math.PI / 4))));
     ctx.lineTo(ship.x + (5 * Math.cos(ship.rot + Math.PI)), ship.y + (5 * Math.sin(ship.rot + Math.PI)));
-    ctx.lineTo(ship.x + (15 * Math.cos(ship.rot + (5 * Math.PI / 4))), ship.y + (15 * Math.sin(ship.rot + (5 * Math.PI / 4))))
-    ctx.lineTo(ship.x + (15 * Math.cos(ship.rot)), ship.y + (15 * Math.sin(ship.rot)))
-    ctx.moveTo(ship.shoot1x, ship.shoot1y);
-    ctx.arc(ship.shoot1x, ship.shoot1y, 5, 0, 2 * Math.PI,);
-    ctx.moveTo(ship.shoot2x, ship.shoot2y);
-    ctx.arc(ship.shoot2x, ship.shoot2y, 5, 0, 2 * Math.PI,);
-    ctx.moveTo(ship.shoot3x, ship.shoot3y);
-    ctx.arc(ship.shoot3x, ship.shoot3y, 5, 0, 2 * Math.PI,);
+    ctx.lineTo(ship.x + (15 * Math.cos(ship.rot + (5 * Math.PI / 4))), ship.y + (15 * Math.sin(ship.rot + (5 * Math.PI / 4))));
+    ctx.lineTo(ship.x + (15 * Math.cos(ship.rot)), ship.y + (15 * Math.sin(ship.rot)));
+    explosionAnimation(ctx, ship.shoot1x, ship.shoot1y, ship.j);
+    explosionAnimation(ctx, ship.shoot2x, ship.shoot2y, ship.k);
+    explosionAnimation(ctx, ship.shoot3x, ship.shoot3y, ship.l);
     ctx.fill();
+    ctx.stroke();
 }
 
 
@@ -102,22 +138,22 @@ document.getElementById("canvas").addEventListener("mousedown", () => {
     a = setInterval(accelerateShip, 16.6);
 
     shootRot = ship.rot;
-    document.getElementById("test").innerHTML = "true";
+    
     if (ship.shoot1x == -30) {
         ship.shoot1x = ship.x;
         ship.shoot1y = ship.y;
         let shootRot1 = ship.rot;
-        let b = setInterval(function(){shoot(ship, "shoot1x", "shoot1y", shootRot1, b)}, 16.6);
+        let b = setInterval(function(){shoot(ship, "j", "shoot1x", "shoot1y", shootRot1, b)}, 16.6);
     } else if (ship.shoot2x == -30) {
         let shootRot2 = ship.rot;
         ship.shoot2x = ship.x;
         ship.shoot2y = ship.y;
-        let c = setInterval(function(){shoot(ship, "shoot2x", "shoot2y", shootRot2, c)}, 16.6);
+        let c = setInterval(function(){shoot(ship, "k", "shoot2x", "shoot2y", shootRot2, c)}, 16.6);
     } else if (ship.shoot3x == -30){
         let shootRot3 = ship.rot;
         ship.shoot3x = ship.x;
         ship.shoot3y = ship.y;
-        let d = setInterval(function(){shoot(ship, "shoot3x", "shoot3y", shootRot3, d)}, 16.6);
+        let d = setInterval(function(){shoot(ship, "l", "shoot3x", "shoot3y", shootRot3, d)}, 16.6);
     }
 })
 document.getElementById("canvas").addEventListener("mouseup", () => {
