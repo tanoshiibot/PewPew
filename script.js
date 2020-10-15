@@ -7,8 +7,12 @@ const ship = {
     "y": document.getElementById("canvas").offsetHeight / 2,
     "rot": 0,
     "velx": 0,
-    "vely": 0
+    "vely": 0,
+    "shootx": 0,
+    "shooty": 0
 };
+
+
 
 class Asteroid {
     constructor(x, y, rad, rot, velx, vely) {
@@ -23,12 +27,14 @@ class Asteroid {
 
 const asteroid1 = new Asteroid(50, 50, 50, 2, 4);
 
+const pointer = [0, 0];
+
 function pointerPos(e) {
-    let xPointer = e.clientX;
-    let yPointer = e.clientY;
-    document.getElementById("accelerate").innerHTML = [xPointer, yPointer];
-    return [xPointer, yPointer];
+    pointer[0] = e.clientX;
+    pointer[1] = e.clientY;
+    document.getElementById("accelerate").innerHTML = pointer;
 }
+
 
 function acceleration() {
     ship.accX += Math.cos(rot) / 100;
@@ -36,7 +42,7 @@ function acceleration() {
 }
 
 function rotation() {
-    let [x, y] = pointerPos(event);
+    let [x, y] = [...pointer];
     
     if (Math.floor(ship.x) == Math.floor(x)) {
         ship.rot = (ship.y + 10) <= y ? Math.PI / 2 : (3 * Math.PI) / 2;
@@ -60,6 +66,7 @@ function trajectory(element){
 
 function drawCanvas() {
     ctx.clearRect(0, 0, 600, 600)
+    rotation();
     trajectory(ship);
     ctx.beginPath();
     ctx.moveTo((ship.x + (15 * Math.cos(ship.rot))), ship.y + (15 * Math.sin(ship.rot)));
@@ -72,7 +79,7 @@ function drawCanvas() {
 
 setInterval(drawCanvas, 16.6);
 
-let a = "";
+let a;
 
 document.getElementById("canvas").addEventListener("mousedown", () => {
     a = setInterval(accelerateShip, 16.6);
@@ -82,7 +89,6 @@ document.getElementById("canvas").addEventListener("mouseup", () => {
 })
 document.getElementById("canvas").addEventListener("pointermove", () => {
     pointerPos(event);
-    rotation();
     document.getElementById("position").innerHTML = [ship.x, ship.y, ship.rot];
 })
 
