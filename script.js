@@ -24,11 +24,12 @@ class Shoot {
 }
 
 class Asteroid {
-    constructor(x, y, rad, rot, velx, vely) {
+    constructor(x, y, rad, rot, i, velx, vely) {
         this.x = x;
         this.y = y;
         this.rad = rad;
         this.rot = rot;
+        this.i = i;
         this.velx = velx;
         this.vely = vely;
     }
@@ -155,8 +156,13 @@ document.getElementById("canvas").addEventListener("mousedown", () => {
     a = setInterval(accelerateShip, 16.6);
     newShoot();
 })
-document.getElementById("canvas").addEventListener("mouseup", () => {
-    clearInterval(a); //sometimes, the ship keeps track of the pointer, even without clicking. It could be because an interval is not cleared. I should look into that.
+document.addEventListener("mouseup", () => {
+    clearInterval(a); 
+    //sometimes, the ship keeps track of the pointer and keeps accelerating, even without clicking. It could be because an interval is not cleared. I should look into that.
+    // => when : it happens when you click on the canvas, and release the click anywhere else.
+    //if you do it multiple times, you can increase the speed at a funny rate.
+    //removed the getElementById("canvas") from the addEventListener, it now works as intended. 
+    
     document.getElementById("test").innerHTML = "false";    
 })
 document.getElementById("canvas").addEventListener("pointermove", () => {
