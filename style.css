@@ -7,3 +7,17 @@
     border-color: black;
     border-width: 2px;
 }
+#shop{
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+#container{
+    display: flex;
+}
+
+#shop{
+    display: flex;
+    flex-direction: column;
+}
