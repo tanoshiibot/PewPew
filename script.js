@@ -108,17 +108,15 @@ function shootAnimation(shoot) {
             ctx.arc(shoot["x"], shoot["y"], 5 + shoot["i"] / 50 , 0, 2 * Math.PI,);
             ctx.fill();
         } else {
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(Math.PI / 4), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(Math.PI / 4));
-            ctx.moveTo(shoot["x"], shoot["y"]);
+            ctx.moveTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(0), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(0));
+            ctx.lineTo(shoot["x"] + (shoot["i"] - 100) * Math.cos(Math.PI / 4), shoot["y"] + (shoot["i"] - 100) * Math.sin(Math.PI / 4));
             ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(Math.PI / 2), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(Math.PI / 2));
-            ctx.moveTo(shoot["x"], shoot["y"]);
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(3 * Math.PI / 4), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(3 * Math.PI / 4));
-            ctx.moveTo(shoot["x"], shoot["y"]);
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(5 * Math.PI / 4), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(5 * Math.PI / 4));
-            ctx.moveTo(shoot["x"], shoot["y"]);
+            ctx.lineTo(shoot["x"] + (shoot["i"] - 100) * Math.cos(3 * Math.PI / 4), shoot["y"] + (shoot["i"] - 100) * Math.sin(3 * Math.PI / 4));
+            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(Math.PI), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(Math.PI));
+            ctx.lineTo(shoot["x"] + (shoot["i"] - 100) * Math.cos(5 * Math.PI / 4), shoot["y"] + (shoot["i"] - 100) * Math.sin(5 * Math.PI / 4));
             ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(3 * Math.PI / 2), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(3 * Math.PI / 2));
-            ctx.moveTo(shoot["x"], shoot["y"]);
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(7 * Math.PI / 4), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(5 * Math.PI / 4));
+            ctx.lineTo(shoot["x"] + (shoot["i"] - 100) * Math.cos(7 * Math.PI / 4), shoot["y"] + (shoot["i"] - 100) * Math.sin(5 * Math.PI / 4));
+            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - 50) * Math.cos(0), shoot["y"] + (shoot["i"] / 2 - 50) * Math.sin(0));
             ctx.fill();
         }
     }
@@ -159,11 +157,10 @@ document.getElementById("canvas").addEventListener("mousedown", () => {
 })
 document.getElementById("canvas").addEventListener("mouseup", () => {
     clearInterval(a); //sometimes, the ship keeps track of the pointer, even without clicking. It could be because an interval is not cleared. I should look into that.
-    document.getElementById("test").innerHTML = "false";
+    document.getElementById("test").innerHTML = "false";    
 })
 document.getElementById("canvas").addEventListener("pointermove", () => {
     pointerPos(event);
-
 })
 
 document.getElementById("button").addEventListener("click", () => {
