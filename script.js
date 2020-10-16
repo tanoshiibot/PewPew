@@ -24,18 +24,43 @@ class Shoot {
     }
 }
 
+
+currentAsteroid = [];
+
 class Asteroid {
-    constructor(x, y, rad, rot, i, velx, vely) {
+    constructor(x, y, rad, rot, n) {
         this.x = x;
         this.y = y;
         this.rad = rad;
         this.rot = rot;
-        this.i = i;
-        this.velx = velx;
-        this.vely = vely;
+        this.n = n;
+        this.velx = 0.3;
+        this.vely = 0.3;
+        //vel dependant of n
+        this.destroyed = false;
     }
 }
 
+function newAsteroid(x, y, rad, rot, n) {
+    let a = new Asteroid (x, y, rad, rot, n);
+    currentAsteroid.push(a);
+}
+
+function drawAsteroid(asteroid){
+    ctx.moveTo(asteroid["x"], asteroid["y"]);
+    ctx.arc(asteroid["x"], asteroid["y"], asteroid["rad"], 0, 2 * Math.PI,);  
+    ctx.fill();  
+}
+
+function destroyAsteroid(){
+    currentAsteroid.forEach((asteroid, j) => {
+        ship.currentShoot.forEach((element, i) => {
+            if (Math.sqrt(((element["x"] - asteroid["x"]) ** 2) + ((element["y"] - asteroid["y"]) ** 2)) <= asteroid["rad"]) {
+                asteroid["destroyed"] = true;
+            }
+        })
+    })
+}
 
 const pointer = [0, 0];
 
@@ -140,6 +165,10 @@ function frame() {
     ctx.clearRect(0, 0, 600, 600)
     rotation();
     trajectory(ship);
+    currentAsteroid.forEach((element, i) => {
+        trajectory(currentAsteroid[i]);
+        drawAsteroid(currentAsteroid[i]);
+    }) 
     ctx.beginPath();
     drawShip();
     ship.currentShoot.forEach((element) => {
@@ -171,7 +200,8 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
 })
 
 document.getElementById("button").addEventListener("click", () => {
-    document.getElementById("button").innerHTML = ship.currentShoot[2]["y"]
+    newAsteroid(50, 50, 50, 1.1, 5);
+    console.log(currentAsteroid);
 })
 
 document.getElementById("range").addEventListener("click", () => {
@@ -180,4 +210,5 @@ document.getElementById("range").addEventListener("click", () => {
 
 document.getElementById("bullet").addEventListener("click", () => {
     ship.currentShoot.push(undefined);
+
 })
