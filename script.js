@@ -24,6 +24,9 @@ class Shoot {
     }
 }
 
+function calcDist(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+}
 
 currentAsteroid = [];
 
@@ -55,7 +58,7 @@ function drawAsteroid(asteroid){
 function destroyAsteroid(){
     currentAsteroid.forEach((asteroid, j) => {
         ship.currentShoot.forEach((element, i) => {
-            if (Math.sqrt(((element["x"] - asteroid["x"]) ** 2) + ((element["y"] - asteroid["y"]) ** 2)) <= asteroid["rad"]) {
+            if (calcDist(asteroid["x"], asteroid["y"], element["x"], element["y"]) <= asteroid["rad"]) {
                 asteroid["destroyed"] = true;
             }
         })
@@ -76,14 +79,13 @@ function acceleration() {
     ship.accY += Math.sin(rot) / 100;
 }
 
-function rotation() {
-    let [x, y] = [...pointer];
-    
-    if (Math.floor(ship.x) == Math.floor(x)) {
-        ship.rot = (ship.y + 10) <= y ? Math.PI / 2 : (3 * Math.PI) / 2;
+function rotation(x1, y1, x2, y2, element) {
+
+    if (Math.floor(x1) == Math.floor(x2)) {
+        element["rot"] = (y1 + 10) <= y2 ? Math.PI / 2 : (3 * Math.PI) / 2;
     } else {
-        ship.rot = Math.atan((y - ship.y) / (x - ship.x));
-        ship.rot += ship.x > x ? Math.PI : 0;
+        element["rot"] = Math.atan((y2 - y1) / (x2 - x1));
+        element["rot"] += x1 > x2 ? Math.PI : 0;
     }
 }
 
@@ -152,30 +154,29 @@ function shootAnimation(shoot) {
 
 function drawShip() {
     if (ship.status == "alive"){
-        ctx.moveTo((ship.x + (15 * Math.cos(ship.rot))), ship.y + (15 * Math.sin(ship.rot)));
-        ctx.lineTo(ship.x + (15 * Math.cos(ship.rot + (3 * Math.PI / 4))), ship.y + (15 * Math.sin(ship.rot + (3 * Math.PI / 4))));
-        ctx.lineTo(ship.x + (5 * Math.cos(ship.rot + Math.PI)), ship.y + (5 * Math.sin(ship.rot + Math.PI)));
-        ctx.lineTo(ship.x + (15 * Math.cos(ship.rot + (5 * Math.PI / 4))), ship.y + (15 * Math.sin(ship.rot + (5 * Math.PI / 4))));
-        ctx.lineTo(ship.x + (15 * Math.cos(ship.rot)), ship.y + (15 * Math.sin(ship.rot)));
+        ctx.moveTo(ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot));
+        ctx.lineTo(ship.x + 15 * Math.cos(ship.rot + (3 * Math.PI / 4)), ship.y + 15 * Math.sin(ship.rot + (3 * Math.PI / 4)));
+        ctx.lineTo(ship.x + 5 * Math.cos(ship.rot + Math.PI), ship.y + 5 * Math.sin(ship.rot + Math.PI));
+        ctx.lineTo(ship.x + 15 * Math.cos(ship.rot + (5 * Math.PI / 4)), ship.y + 15 * Math.sin(ship.rot + (5 * Math.PI / 4)));
+        ctx.lineTo(ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot));
+        ctx.fill();
     }
 }
 
 function frame() {
     document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot];
     ctx.clearRect(0, 0, 600, 600)
-    rotation();
+    rotation(ship["x"], ship["y"], pointer[0], pointer[1], ship);
     trajectory(ship);
+    ctx.beginPath();
     currentAsteroid.forEach((element, i) => {
         trajectory(currentAsteroid[i]);
         drawAsteroid(currentAsteroid[i]);
     }) 
-    ctx.beginPath();
     drawShip();
     ship.currentShoot.forEach((element) => {
         shootAnimation(element);
     })
-    ctx.fill();
-    ctx.stroke();
 
 }
 
@@ -200,6 +201,7 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
 })
 
 document.getElementById("button").addEventListener("click", () => {
+    //it also creates a new pointer where the first one is and I have no idea why
     newAsteroid(50, 50, 50, 1.1, 5);
     console.log(currentAsteroid);
 })
