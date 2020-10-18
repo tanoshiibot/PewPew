@@ -12,6 +12,7 @@ const ship = {
     "currentShoot": [undefined],
     "status": "alive",
     "range": 100,
+    "acc": false
 };
 
 class Shoot {
@@ -73,14 +74,7 @@ function pointerPos(e) {
     document.getElementById("pointer").innerHTML = pointer;
 }
 
-
-function acceleration() {
-    ship.accX += Math.cos(rot) / 100;
-    ship.accY += Math.sin(rot) / 100;
-}
-
 function rotation(x1, y1, x2, y2, element) {
-
     if (Math.floor(x1) == Math.floor(x2)) {
         element["rot"] = (y1 + 10) <= y2 ? Math.PI / 2 : (3 * Math.PI) / 2;
     } else {
@@ -90,8 +84,10 @@ function rotation(x1, y1, x2, y2, element) {
 }
 
 function accelerateShip(){
+    if (ship.acc == true) {
     ship.velx += Math.cos(ship.rot) / 10;
     ship.vely += Math.sin(ship.rot) / 10;
+    }
 }
 
 function trajectory(element){
@@ -165,6 +161,7 @@ function drawShip() {
 
 function frame() {
     document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot];
+    accelerateShip();
     ctx.clearRect(0, 0, 600, 600)
     rotation(ship["x"], ship["y"], pointer[0], pointer[1], ship);
     trajectory(ship);
@@ -185,17 +182,13 @@ setInterval(frame, 16.6);
 let a;
 
 document.getElementById("canvas").addEventListener("mousedown", () => {
-    a = setInterval(accelerateShip, 16.6);
+    ship["acc"] = true;
     newShoot();
 })
 document.addEventListener("mouseup", () => {
-    clearInterval(a); 
-    //sometimes, the ship keeps track of the pointer and keeps accelerating, even without clicking. It could be because an interval is not cleared. I should look into that.
-    // => when : it happens when you click on the canvas, and release the click anywhere else.
-    //if you do it multiple times, you can increase the speed at a funny rate.
-    //removed the getElementById("canvas") from the addEventListener, it now works as intended. 
- 
+    ship["acc"] = false;
 })
+
 document.getElementById("canvas").addEventListener("pointermove", () => {
     pointerPos(event);
 })
@@ -203,7 +196,6 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
 document.getElementById("button").addEventListener("click", () => {
     //it also creates a new pointer where the first one is and I have no idea why
     newAsteroid(50, 50, 50, 1.1, 5);
-    console.log(currentAsteroid);
 })
 
 document.getElementById("range").addEventListener("click", () => {
