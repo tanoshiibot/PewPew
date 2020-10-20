@@ -6,13 +6,14 @@ const ship = {
     "x": document.getElementById("canvas").offsetWidth / 2,
     "y": document.getElementById("canvas").offsetHeight / 2,
     "rot": 0,
+    "acc": false,
     "velx": 0,
     "vely": 0,
     "maxShoot": 3,
     "currentShoot": [undefined],
-    "status": "alive",
     "range": 100,
-    "acc": false
+    "bullet_size" : 5,
+    "status": "alive",
 };
 
 class Shoot {
@@ -20,6 +21,7 @@ class Shoot {
         this.x = x;
         this.y = y;
         this.rot = rot;
+        this.rad = ship.bullet_size;
         this.i = 0;
         this.explosion = false;
     }
@@ -50,13 +52,13 @@ function newAsteroid(x, y, rad, rot, n) {
     currentAsteroid.push(a);
 }
 
-function drawAsteroid(asteroid){
+function drawAsteroid(asteroid) {
     ctx.moveTo(asteroid["x"], asteroid["y"]);
     ctx.arc(asteroid["x"], asteroid["y"], asteroid["rad"], 0, 2 * Math.PI,);  
     ctx.fill();  
 }
 
-function destroyAsteroid(){
+function destroyAsteroid() {
     currentAsteroid.forEach((asteroid, j) => {
         ship.currentShoot.forEach((element, i) => {
             if (calcDist(asteroid["x"], asteroid["y"], element["x"], element["y"]) <= asteroid["rad"]) {
@@ -83,14 +85,14 @@ function rotation(x1, y1, x2, y2, element) {
     }
 }
 
-function accelerateShip(){
+function accelerateShip() {
     if (ship.acc == true) {
     ship.velx += Math.cos(ship.rot) / 10;
     ship.vely += Math.sin(ship.rot) / 10;
     }
 }
 
-function trajectory(element){
+function trajectory(element) {
     element.x = (element.x + element.velx + 600) % 600;
     element.y = (element.y + element.vely + 600) % 600;
 }
@@ -98,7 +100,7 @@ function trajectory(element){
 function newShoot() {
     ship.currentShoot.forEach((element, i) => {
         if (ship.currentShoot[i] == undefined){
-            ship.currentShoot[i] = new Shoot (ship.x, ship.y, ship.rot);
+            ship.currentShoot[i] = new Shoot (ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot), ship.rot);
             let int = setInterval(function(){shoot(int, i)}, 16.6);
             throw {};
             //throw is the only way I found to stop a forEach. It works, but it says in the concole that there's an error. I would like to find another way to stop the forEach.
@@ -131,25 +133,25 @@ function shootAnimation(shoot) {
     if (shoot != undefined){
         ctx.moveTo(shoot["x"], shoot["y"]);
         if (shoot["explosion"] == false) {
-            ctx.arc(shoot["x"], shoot["y"], 5, 0, 2 * Math.PI,);
+            ctx.arc(shoot["x"], shoot["y"], shoot["rad"], 0, 2 * Math.PI,);
             ctx.fill();
         } else {
-            ctx.moveTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * Math.cos(0), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * Math.sin(0));
-            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * Math.cos(Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * Math.sin(Math.PI / 4));
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * Math.cos(Math.PI / 2), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * Math.sin(Math.PI / 2));
-            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * Math.cos(3 * Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * Math.sin(3 * Math.PI / 4));
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * Math.cos(Math.PI), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * Math.sin(Math.PI));
-            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * Math.cos(5 * Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * Math.sin(5 * Math.PI / 4));
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * Math.cos(3 * Math.PI / 2), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * Math.sin(3 * Math.PI / 2));
-            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * Math.cos(7 * Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * Math.sin(5 * Math.PI / 4));
-            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * Math.cos(0), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * Math.sin(0));
+            ctx.moveTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.cos(0), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.sin(0));
+            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.cos(Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.sin(Math.PI / 4));
+            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.cos(Math.PI / 2), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.sin(Math.PI / 2));
+            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.cos(3 * Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.sin(3 * Math.PI / 4));
+            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.cos(Math.PI), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.sin(Math.PI));
+            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.cos(5 * Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.sin(5 * Math.PI / 4));
+            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.cos(3 * Math.PI / 2), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.sin(3 * Math.PI / 2));
+            ctx.lineTo(shoot["x"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.cos(7 * Math.PI / 4), shoot["y"] + (shoot["i"] - ship.range) * shoot["rad"] / 5 * Math.sin(5 * Math.PI / 4));
+            ctx.lineTo(shoot["x"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.cos(0), shoot["y"] + (shoot["i"] / 2 - ship.range / 2) * shoot["rad"] / 5 * Math.sin(0));
             ctx.fill();
         }
     }
 }
 
 function drawShip() {
-    if (ship.status == "alive"){
+    if (ship.status == "alive") {
         ctx.moveTo(ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot));
         ctx.lineTo(ship.x + 15 * Math.cos(ship.rot + (3 * Math.PI / 4)), ship.y + 15 * Math.sin(ship.rot + (3 * Math.PI / 4)));
         ctx.lineTo(ship.x + 5 * Math.cos(ship.rot + Math.PI), ship.y + 5 * Math.sin(ship.rot + Math.PI));
@@ -174,17 +176,15 @@ function frame() {
     ship.currentShoot.forEach((element) => {
         shootAnimation(element);
     })
-
 }
 
 setInterval(frame, 16.6);
-
-let a;
 
 document.getElementById("canvas").addEventListener("mousedown", () => {
     ship["acc"] = true;
     newShoot();
 })
+
 document.addEventListener("mouseup", () => {
     ship["acc"] = false;
 })
@@ -195,6 +195,7 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
 
 document.getElementById("button").addEventListener("click", () => {
     //it also creates a new pointer where the first one is and I have no idea why
+    //the problem is solved. I don't know how but it is.
     newAsteroid(50, 50, 50, 1.1, 5);
 })
 
@@ -204,5 +205,8 @@ document.getElementById("range").addEventListener("click", () => {
 
 document.getElementById("bullet").addEventListener("click", () => {
     ship.currentShoot.push(undefined);
+})
 
+document.getElementById("size").addEventListener("click", () => {
+    ship["bullet_size"]++;
 })
