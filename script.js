@@ -103,7 +103,6 @@ const pointer = [0, 0];
 function pointerPos(e) {
     pointer[0] = e.clientX;
     pointer[1] = e.clientY;
-    document.getElementById("pointer").innerHTML = pointer;
 }
 
 function rotation(x1, y1, x2, y2, element) {
@@ -148,7 +147,6 @@ function shoot(interval, i) {
         ship.currentShoot[i]["x"] = ship.currentShoot[i]["x"];
         ship.currentShoot[i]["y"] = ship.currentShoot[i]["y"];
         ship.currentShoot[i]["explosion"] = true;
-        document.getElementById("test").innerHTML = ship.currentShoot[i]["i"];
 
     } else if (ship.currentShoot[i]["i"] > (ship.range + 20)) {
         ship.currentShoot[i] = undefined;
@@ -190,7 +188,6 @@ function drawShip() {
 function frame() {
     ctx.clearRect(0, 0, 600, 600)
     if (ship.status == "alive") {
-        document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot];
         accelerateShip();
         trajectory(ship);
         rotation(ship["x"], ship["y"], pointer[0], pointer[1], ship);
@@ -233,10 +230,6 @@ document.addEventListener("mouseup", () => {
 
 document.getElementById("canvas").addEventListener("pointermove", () => {
     pointerPos(event);
-})
-
-document.getElementById("button").addEventListener("click", () => {
-    newAsteroid(50, 50, 100, 1.1, 3);
 })
 
 document.getElementById("range").addEventListener("click", () => {
