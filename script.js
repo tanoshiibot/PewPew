@@ -78,6 +78,26 @@ function destroyAsteroid(asteroid, j) {
     })
 }
 
+function destroyShip(asteroid) {
+    if (calcDist(asteroid["x"], asteroid["y"], ship["x"], ship["y"]) <= asteroid["rad"] + 10) {
+        ship["status"] = 0;
+    }
+}
+
+function destroyShipAnimation() {
+
+    ctx.moveTo(ship["x"] + (ship["status"] / 2 ) * 15 / 5 * Math.cos(0), ship["y"] + (ship["status"] / 2 ) * 15 / 5 * Math.sin(0));
+    ctx.lineTo(ship["x"] + ship["status"] * 15 / 5 * Math.cos(Math.PI / 4), ship["y"] + ship["status"] * 15 / 5 * Math.sin(Math.PI / 4));
+    ctx.lineTo(ship["x"] + (ship["status"] / 2 ) * 15 / 5 * Math.cos(Math.PI / 2), ship["y"] + (ship["status"] / 2 ) * 15 / 5 * Math.sin(Math.PI / 2));
+    ctx.lineTo(ship["x"] + ship["status"] * 15 / 5 * Math.cos(3 * Math.PI / 4), ship["y"] + ship["status"] * 15 / 5 * Math.sin(3 * Math.PI / 4));
+    ctx.lineTo(ship["x"] + (ship["status"] / 2 ) * 15 / 5 * Math.cos(Math.PI), ship["y"] + (ship["status"] / 2 ) * 15 / 5 * Math.sin(Math.PI));
+    ctx.lineTo(ship["x"] + ship["status"] * 15 / 5 * Math.cos(5 * Math.PI / 4), ship["y"] + ship["status"] * 15 / 5 * Math.sin(5 * Math.PI / 4));
+    ctx.lineTo(ship["x"] + (ship["status"] / 2 ) * 15 / 5 * Math.cos(3 * Math.PI / 2), ship["y"] + (ship["status"] / 2 ) * 15 / 5 * Math.sin(3 * Math.PI / 2));
+    ctx.lineTo(ship["x"] + ship["status"] * 15 / 5 * Math.cos(7 * Math.PI / 4), ship["y"] + ship["status"] * 15 / 5 * Math.sin(5 * Math.PI / 4));
+    ctx.lineTo(ship["x"] + (ship["status"] / 2 ) * 15 / 5 * Math.cos(0), ship["y"] + (ship["status"] / 2 ) * 15 / 5 * Math.sin(0));
+    ctx.fill();
+}
+
 const pointer = [0, 0];
 
 function pointerPos(e) {
@@ -159,38 +179,43 @@ function shootAnimation(shoot) {
 }
 
 function drawShip() {
-    if (ship.status == "alive") {
-        ctx.moveTo(ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot));
-        ctx.lineTo(ship.x + 15 * Math.cos(ship.rot + (3 * Math.PI / 4)), ship.y + 15 * Math.sin(ship.rot + (3 * Math.PI / 4)));
-        ctx.lineTo(ship.x + 5 * Math.cos(ship.rot + Math.PI), ship.y + 5 * Math.sin(ship.rot + Math.PI));
-        ctx.lineTo(ship.x + 15 * Math.cos(ship.rot + (5 * Math.PI / 4)), ship.y + 15 * Math.sin(ship.rot + (5 * Math.PI / 4)));
-        ctx.lineTo(ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot));
-        ctx.fill();
-    }
+    ctx.moveTo(ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot));
+    ctx.lineTo(ship.x + 15 * Math.cos(ship.rot + (3 * Math.PI / 4)), ship.y + 15 * Math.sin(ship.rot + (3 * Math.PI / 4)));
+    ctx.lineTo(ship.x + 5 * Math.cos(ship.rot + Math.PI), ship.y + 5 * Math.sin(ship.rot + Math.PI));
+    ctx.lineTo(ship.x + 15 * Math.cos(ship.rot + (5 * Math.PI / 4)), ship.y + 15 * Math.sin(ship.rot + (5 * Math.PI / 4)));
+    ctx.lineTo(ship.x + 15 * Math.cos(ship.rot), ship.y + 15 * Math.sin(ship.rot));
+    ctx.fill();
 }
 
 function frame() {
-    document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot];
-    document.getElementById("points").innerHTML = ship.points;
-    document.getElementById("score").innerHTML = ship.score;
-    accelerateShip();
     ctx.clearRect(0, 0, 600, 600)
-    rotation(ship["x"], ship["y"], pointer[0], pointer[1], ship);
-    trajectory(ship);
-    ctx.beginPath();
-    drawShip();
-    currentAsteroid.forEach((element, i) => {
-        if (element["destroyed"] == false) {
-            trajectory(element);
-            drawAsteroid(element);
-            destroyAsteroid(element, i);
-        } else {
-            element = undefined;
-        }
-    }) 
-    ship.currentShoot.forEach((element) => {
-        shootAnimation(element);
-    })
+    if (ship.status == "alive") {
+        document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot];
+        accelerateShip();
+        trajectory(ship);
+        rotation(ship["x"], ship["y"], pointer[0], pointer[1], ship);
+        document.getElementById("points").innerHTML = ship.points;
+        document.getElementById("score").innerHTML = ship.score;
+        ctx.beginPath();
+        drawShip();
+        currentAsteroid.forEach((element, i) => {
+            if (element["destroyed"] == false) {
+                trajectory(element);
+                drawAsteroid(element);
+                destroyAsteroid(element, i);
+                destroyShip(element);
+            } else {
+                element = undefined;
+            }
+        }) 
+        ship.currentShoot.forEach((element) => {
+            shootAnimation(element);
+        })
+    } else {
+        ship["status"]++;
+        destroyShipAnimation();
+        document.getElementById("status").innerHTML = "Game over :(";
+    }
 }
 
 setInterval(frame, 16.6);
