@@ -42,8 +42,8 @@ class Asteroid {
         this.rad = rad;
         this.rot = rot;
         this.n = n;
-        this.velx = - ((n - 6) / 3);
-        this.vely = - ((n - 6) / 3);
+        this.velx = Math.cos(this.rot) * -(n - 6) / 3;
+        this.vely = Math.sin(this.rot) * -(n - 6) / 3;
         //vel dependant of n
         this.destroyed = false;
     }
