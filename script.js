@@ -13,6 +13,7 @@ const ship = {
     "currentShoot": [undefined],
     "range": 100,
     "bullet_size" : 5,
+    "score" : 0,
     "status": "alive",
 };
 
@@ -33,6 +34,7 @@ function calcDist(x1, y1, x2, y2) {
 
 currentAsteroid = [];
 
+
 class Asteroid {
     constructor(x, y, rad, rot, n) {
         this.x = x;
@@ -40,8 +42,8 @@ class Asteroid {
         this.rad = rad;
         this.rot = rot;
         this.n = n;
-        this.velx = 0.3;
-        this.vely = 0.3;
+        this.velx = - ((n - 6) / 3);
+        this.vely = - ((n - 6) / 3);
         //vel dependant of n
         this.destroyed = false;
     }
@@ -58,13 +60,19 @@ function drawAsteroid(asteroid) {
     ctx.fill();  
 }
 
-function destroyAsteroid() {
-    currentAsteroid.forEach((asteroid, j) => {
-        ship.currentShoot.forEach((element, i) => {
-            if (calcDist(asteroid["x"], asteroid["y"], element["x"], element["y"]) <= asteroid["rad"]) {
-                asteroid["destroyed"] = true;
+function destroyAsteroid(asteroid, j) {
+    [...ship["currentShoot"]].forEach((shoot, i) => {
+        if (shoot != undefined) {
+            if (calcDist(asteroid["x"], asteroid["y"], shoot["x"], shoot["y"]) <= asteroid["rad"]) {
+                ship.currentShoot[i]["i"] = 120;
+                currentAsteroid[j]["destroyed"] = true;
+                ship["score"]++;
+                if (asteroid["n"] != 0) {
+                    newAsteroid(asteroid["x"] + asteroid["rad"] * Math.cos(shoot["rot"] + Math.PI / 2), asteroid["y"] + asteroid["rad"] * Math.sin(shoot["rot"] + Math.PI / 2), asteroid["rad"] / 2, shoot["rot"] + Math.PI / 2, asteroid["n"] - 1);
+                    newAsteroid(asteroid["x"] + asteroid["rad"] * Math.cos(shoot["rot"] - Math.PI / 2), asteroid["y"] + asteroid["rad"] * Math.sin(shoot["rot"] - Math.PI / 2), asteroid["rad"] / 2, shoot["rot"] - Math.PI / 2, asteroid["n"] - 1);
+                }
             }
-        })
+        }
     })
 }
 
@@ -121,8 +129,6 @@ function shoot(interval, i) {
         document.getElementById("test").innerHTML = ship.currentShoot[i]["i"];
 
     } else if (ship.currentShoot[i]["i"] > (ship.range + 20)) {
-        ship.currentShoot[i]["explosion"] = false;
-        ship.currentShoot[i]["i"] = 0;
         ship.currentShoot[i] = undefined;
         clearInterval(interval);
     }
@@ -163,16 +169,20 @@ function drawShip() {
 
 function frame() {
     document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot];
+    document.getElementById("score").innerHTML = ship.score;
     accelerateShip();
     ctx.clearRect(0, 0, 600, 600)
     rotation(ship["x"], ship["y"], pointer[0], pointer[1], ship);
     trajectory(ship);
     ctx.beginPath();
-    currentAsteroid.forEach((element, i) => {
-        trajectory(currentAsteroid[i]);
-        drawAsteroid(currentAsteroid[i]);
-    }) 
     drawShip();
+    currentAsteroid.forEach((element, i) => {
+        if (element["destroyed"] == false) {
+            trajectory(currentAsteroid[i]);
+            drawAsteroid(currentAsteroid[i]);
+            destroyAsteroid(element, i);
+        }
+    }) 
     ship.currentShoot.forEach((element) => {
         shootAnimation(element);
     })
@@ -194,13 +204,13 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
 })
 
 document.getElementById("button").addEventListener("click", () => {
-    //it also creates a new pointer where the first one is and I have no idea why
+    //it also creates a new ship where the first one is and I have no idea why
     //the problem is solved. I don't know how but it is.
-    newAsteroid(50, 50, 50, 1.1, 5);
+    newAsteroid(50, 50, 100, 1.1, 3);
 })
 
 document.getElementById("range").addEventListener("click", () => {
-    ship.range = ship.range + 10;
+    ship["range"] += 10;
 })
 
 document.getElementById("bullet").addEventListener("click", () => {
