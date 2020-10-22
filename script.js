@@ -14,6 +14,7 @@ const ship = {
     "range": 100,
     "bullet_size" : 5,
     "score" : 0,
+    "points" : 0,
     "status": "alive",
 };
 
@@ -63,9 +64,10 @@ function drawAsteroid(asteroid) {
 function destroyAsteroid(asteroid, j) {
     [...ship["currentShoot"]].forEach((shoot, i) => {
         if (shoot != undefined) {
-            if (calcDist(asteroid["x"], asteroid["y"], shoot["x"], shoot["y"]) <= asteroid["rad"]) {
-                ship.currentShoot[i]["i"] = 120;
+            if (calcDist(asteroid["x"], asteroid["y"], shoot["x"], shoot["y"]) <= asteroid["rad"] + shoot["rad"]) {
+                ship.currentShoot[i]["i"] = ship.range;
                 currentAsteroid[j]["destroyed"] = true;
+                ship["points"]++;
                 ship["score"]++;
                 if (asteroid["n"] != 0) {
                     newAsteroid(asteroid["x"] + asteroid["rad"] * Math.cos(shoot["rot"] + Math.PI / 2), asteroid["y"] + asteroid["rad"] * Math.sin(shoot["rot"] + Math.PI / 2), asteroid["rad"] / 2, shoot["rot"] + Math.PI / 2, asteroid["n"] - 1);
@@ -169,6 +171,7 @@ function drawShip() {
 
 function frame() {
     document.getElementById("position").innerHTML = [~~ship.x, ~~ship.y, ship.rot];
+    document.getElementById("points").innerHTML = ship.points;
     document.getElementById("score").innerHTML = ship.score;
     accelerateShip();
     ctx.clearRect(0, 0, 600, 600)
@@ -178,9 +181,11 @@ function frame() {
     drawShip();
     currentAsteroid.forEach((element, i) => {
         if (element["destroyed"] == false) {
-            trajectory(currentAsteroid[i]);
-            drawAsteroid(currentAsteroid[i]);
+            trajectory(element);
+            drawAsteroid(element);
             destroyAsteroid(element, i);
+        } else {
+            element = undefined;
         }
     }) 
     ship.currentShoot.forEach((element) => {
@@ -204,19 +209,26 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
 })
 
 document.getElementById("button").addEventListener("click", () => {
-    //it also creates a new ship where the first one is and I have no idea why
-    //the problem is solved. I don't know how but it is.
     newAsteroid(50, 50, 100, 1.1, 3);
 })
 
 document.getElementById("range").addEventListener("click", () => {
-    ship["range"] += 10;
-})
-
-document.getElementById("bullet").addEventListener("click", () => {
-    ship.currentShoot.push(undefined);
+    if (ship.points >= 5) {
+        ship["range"] += 5;
+        ship["points"] -= 5;
+    }
 })
 
 document.getElementById("size").addEventListener("click", () => {
-    ship["bullet_size"]++;
+    if (ship.points >= 10) {
+        ship["bullet_size"]++;
+        ship["points"] -= 10;
+    }
 })
+document.getElementById("bullet").addEventListener("click", () => {
+    if (ship.points >= 30) {
+        ship.currentShoot.push(undefined);
+        ship["points"] -= 30;
+    }
+})
+
