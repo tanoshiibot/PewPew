@@ -212,7 +212,9 @@ function frame() {
             shootAnimation(element);
         })
     } else {
-        ship["status"]++;
+        if (ship["status"] < 800) {
+            ship["status"]++;
+        }
         destroyShipAnimation();
         document.getElementById("status").innerHTML = "Game over :(";
     }
