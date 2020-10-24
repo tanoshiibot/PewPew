@@ -227,6 +227,11 @@ function frame() {
     }
     document.getElementById("points").innerHTML = ship.points;
     document.getElementById("score").innerHTML = ship.score;
+    document.getElementById("highscore").innerHTML = localStorage.getItem("highscore");
+    if (localStorage.getItem("highscore") == null || localStorage.getItem("highscore") < ship.score){
+        localStorage.setItem("highscore", ship.score);
+        document.getElementById("newrecord").innerHTML = "New Record !!!";
+    }
 }
 
 setInterval(frame, 16.6);
@@ -245,22 +250,22 @@ document.getElementById("canvas").addEventListener("pointermove", () => {
 })
 
 document.getElementById("range").addEventListener("click", () => {
-    if (ship.points >= 5) {
-        ship["range"] += 5;
-        ship["points"] -= 5;
+    if (ship.points >= 8) {
+        ship["range"] += 10;
+        ship["points"] -= 8;
     }
 })
 
 document.getElementById("size").addEventListener("click", () => {
-    if (ship.points >= 10) {
+    if (ship.points >= 16) {
         ship["bullet_size"]++;
-        ship["points"] -= 10;
+        ship["points"] -= 16;
     }
 })
 document.getElementById("bullet").addEventListener("click", () => {
-    if (ship.points >= 30) {
+    if (ship.points >= 32) {
         ship.currentShoot.push(undefined);
-        ship["points"] -= 30;
+        ship["points"] -= 32;
     }
 })
 
