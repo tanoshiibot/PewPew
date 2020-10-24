@@ -18,14 +18,9 @@
 }
 
 #shop{
+    padding: 2em;
     display: flex;
     flex-direction: column;
-}
-
-p{
-    margin: 1em 1em 1em 1em;
-}
-
-button{
-    margin: 1em 1em 1em 1em;
+    justify-content: space-around;
+    align-items: center;
 }
