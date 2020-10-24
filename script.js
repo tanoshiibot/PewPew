@@ -33,8 +33,17 @@ function calcDist(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 }
 
-let currentAsteroid = [];
+let currentLevel = 0; 
 
+function levelUp() {
+    document.getElementById("level").innerHTML = currentLevel;
+    ship["score"] += 5 * currentLevel;
+    ship["points"] += 5 * currentLevel;
+    newAsteroid(0, 0, (2 **currentLevel) * 5, Math.PI / 4, currentLevel);
+    currentLevel++;
+}
+
+let currentAsteroid = [];
 
 class Asteroid {
     constructor(x, y, rad, rot, n) {
@@ -191,8 +200,6 @@ function frame() {
         accelerateShip();
         trajectory(ship);
         rotation(ship["x"], ship["y"], pointer[0], pointer[1], ship);
-        document.getElementById("points").innerHTML = ship.points;
-        document.getElementById("score").innerHTML = ship.score;
         ctx.beginPath();
         drawShip();
         currentAsteroid.forEach((element, i) => {
@@ -202,7 +209,7 @@ function frame() {
                 destroyAsteroid(element, i);
                 destroyShip(element);
             } else {
-                element = undefined;
+                currentAsteroid.splice(i, 1)
             }
         }) 
         ship.currentShoot.forEach((element) => {
@@ -215,6 +222,11 @@ function frame() {
         destroyShipAnimation();
         document.getElementById("status").innerHTML = "Game over :(";
     }
+    if (currentAsteroid.length == 0) {
+        levelUp();
+    }
+    document.getElementById("points").innerHTML = ship.points;
+    document.getElementById("score").innerHTML = ship.score;
 }
 
 setInterval(frame, 16.6);
