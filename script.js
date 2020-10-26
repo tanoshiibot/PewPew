@@ -39,7 +39,7 @@ function levelUp() {
     document.getElementById("level").innerHTML = currentLevel;
     ship["score"] += 5 * currentLevel;
     ship["points"] += 5 * currentLevel;
-    newAsteroid(0, 0, (2 **currentLevel) * 5, Math.PI / 4, currentLevel);
+    newAsteroid(0, 0, (2 ** currentLevel) * 10, Math.PI / 4, currentLevel);
     currentLevel++;
 }
 
@@ -67,7 +67,7 @@ function newAsteroid(x, y, rad, rot, n) {
 function drawAsteroid(asteroid) {
     ctx.moveTo(asteroid["x"], asteroid["y"]);
     ctx.arc(asteroid["x"], asteroid["y"], asteroid["rad"], 0, 2 * Math.PI,);  
-    ctx.fill();  
+    ctx.fill();
 }
 
 function destroyAsteroid(asteroid, j) {
